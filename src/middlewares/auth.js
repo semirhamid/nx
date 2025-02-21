@@ -2,6 +2,19 @@ const jwt = require('jsonwebtoken');
 const { ApiError } = require('./errorHandler');
 const User = require('../data/models/user.model');
 
+const checkPermission = (permission) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user.hasPermission(permission)) {
+        throw new ApiError(403, 'Insufficient permissions');
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
 const protect = async (req, res, next) => {
   try {
     let token;
@@ -34,7 +47,7 @@ const protect = async (req, res, next) => {
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(new ApiError(403, `User role ${req.user.role} is not authorized to access this route`));
+      return next(new ApiError(403, `Role ${req.user.role} is not authorized`));
     }
     next();
   };
@@ -42,5 +55,6 @@ const authorize = (...roles) => {
 
 module.exports = {
   protect,
-  authorize
+  authorize,
+  checkPermission
 }; 

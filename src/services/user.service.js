@@ -1,4 +1,5 @@
 const userRepository = require('../repositories/user.repository');
+const { ApiError } = require('../middlewares/errorHandler');
 
 class UserService {
   async getAllUsers() {
@@ -15,6 +16,19 @@ class UserService {
 
   async deleteUser(id) {
     return userRepository.delete(id);
+  }
+
+  async assignRole(userId, role) {
+    if (!['user', 'admin', 'manager'].includes(role)) {
+      throw new ApiError(400, 'Invalid role');
+    }
+
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    return userRepository.update(userId, { role });
   }
 }
 

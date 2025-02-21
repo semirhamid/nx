@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middlewares/auth');
+const { protect, authorize, checkPermission } = require('../middlewares/auth');
 const taskService = require('../services/task.service');
 
 /**
@@ -15,7 +15,7 @@ const taskService = require('../services/task.service');
  *       200:
  *         description: List of tasks
  */
-router.get('/', protect, async (req, res, next) => {
+router.get('/', protect, checkPermission('read_own_tasks'), async (req, res, next) => {
   try {
     const tasks = await taskService.getAllTasks(req.user.id);
     res.status(200).json(tasks);
@@ -148,6 +148,15 @@ router.delete('/:id', protect, async (req, res, next) => {
   try {
     await taskService.deleteTask(req.params.id, req.user.id);
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/team', protect, checkPermission('read_team_tasks'), async (req, res, next) => {
+  try {
+    const tasks = await taskService.getTeamTasks(req.user.teamId);
+    res.status(200).json(tasks);
   } catch (error) {
     next(error);
   }

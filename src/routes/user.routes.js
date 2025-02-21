@@ -117,4 +117,43 @@ router.delete('/:id', protect, authorize('admin'), async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}/role:
+ *   patch:
+ *     tags: [Users]
+ *     summary: Assign role to user
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - role
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin, manager]
+ *     responses:
+ *       200:
+ *         description: Role assigned successfully
+ */
+router.patch('/:id/role', protect, authorize('admin'), async (req, res, next) => {
+  try {
+    const user = await userService.assignRole(req.params.id, req.body.role);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router; 
