@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middlewares/auth');
+const userService = require('../services/user.service');
 
 /**
  * @swagger
@@ -14,9 +15,13 @@ const { protect, authorize } = require('../middlewares/auth');
  *       200:
  *         description: List of users
  */
-router.get('/', protect, authorize('admin'), (req, res) => {
-  // TODO: Implement get all users
-  res.status(200).json({ message: 'Get all users endpoint' });
+router.get('/', protect, authorize('admin'), async (req, res, next) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -37,9 +42,13 @@ router.get('/', protect, authorize('admin'), (req, res) => {
  *       200:
  *         description: User details
  */
-router.get('/:id', protect, (req, res) => {
-  // TODO: Implement get user by id
-  res.status(200).json({ message: 'Get user by id endpoint' });
+router.get('/:id', protect, async (req, res, next) => {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router; 

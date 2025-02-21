@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middlewares/auth');
+const taskService = require('../services/task.service');
 
 /**
  * @swagger
@@ -14,9 +15,13 @@ const { protect } = require('../middlewares/auth');
  *       200:
  *         description: List of tasks
  */
-router.get('/', protect, (req, res) => {
-  // TODO: Implement get all tasks
-  res.status(200).json({ message: 'Get all tasks endpoint' });
+router.get('/', protect, async (req, res, next) => {
+  try {
+    const tasks = await taskService.getAllTasks(req.user.id);
+    res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -44,9 +49,13 @@ router.get('/', protect, (req, res) => {
  *       201:
  *         description: Task created successfully
  */
-router.post('/', protect, (req, res) => {
-  // TODO: Implement create task
-  res.status(201).json({ message: 'Create task endpoint' });
+router.post('/', protect, async (req, res, next) => {
+  try {
+    const task = await taskService.createTask(req.body, req.user.id);
+    res.status(201).json(task);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router; 

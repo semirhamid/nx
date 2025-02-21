@@ -5,13 +5,13 @@ COPY package*.json ./
 
 # Development stage
 FROM base as development
-RUN npm install
+RUN npm install --include=dev
 COPY . .
 CMD ["npm", "run", "dev"]
 
 # Production stage
 FROM base as production
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 COPY . .
 CMD ["npm", "start"]
 

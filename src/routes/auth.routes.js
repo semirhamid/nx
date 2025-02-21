@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const authService = require('../services/auth.service');
+const { ApiError } = require('../middlewares/errorHandler');
 
 /**
  * @swagger
@@ -25,9 +27,13 @@ const router = express.Router();
  *       201:
  *         description: User registered successfully
  */
-router.post('/register', (req, res) => {
-  // TODO: Implement registration
-  res.status(201).json({ message: 'Registration endpoint' });
+router.post('/register', async (req, res, next) => {
+  try {
+    const { user, token } = await authService.register(req.body);
+    res.status(201).json({ user, token });
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -54,9 +60,14 @@ router.post('/register', (req, res) => {
  *       200:
  *         description: Login successful
  */
-router.post('/login', (req, res) => {
-  // TODO: Implement login
-  res.status(200).json({ message: 'Login endpoint' });
+router.post('/login', async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const { user, token } = await authService.login(email, password);
+    res.status(200).json({ user, token });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router; 

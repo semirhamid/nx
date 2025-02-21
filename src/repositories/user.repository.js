@@ -1,5 +1,5 @@
 const BaseRepository = require('./base.repository');
-const User = require('../models/user.model');
+const User = require('../data/models/user.model');
 const { ApiError } = require('../middlewares/errorHandler');
 const cacheService = require('../services/cache.service');
 

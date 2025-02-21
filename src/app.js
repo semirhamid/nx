@@ -8,7 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const connectDB = require('./config/database');
 const logger = require('./config/logger');
-const errorHandler = require('./middlewares/errorHandler');
+const { errorHandler } = require('./middlewares/errorHandler');
 
 // route imports 
 const authRoutes = require('./routes/auth.routes');
@@ -26,12 +26,13 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
-
+// Rate limiting
 const limiter = rateLimit({
-  windowMs: process.env.RATE_LIMIT_WINDOW_MS,
-  max: process.env.RATE_LIMIT_MAX_REQUESTS
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 900000,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100
 });
 app.use(limiter);
+
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -41,17 +42,21 @@ app.use('/api/tasks', taskRoutes);
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Error handling
-app.use(errorHandler);
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+// Error handling middleware must be after all routes
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
 
 module.exports = app; 
