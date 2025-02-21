@@ -156,4 +156,149 @@ router.patch('/:id/role', protect, authorize('admin'), async (req, res, next) =>
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}/team:
+ *   post:
+ *     tags: [Users]
+ *     summary: Add user to a team
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - teamId
+ *             properties:
+ *               teamId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User added to team successfully
+ */
+router.post('/:id/team', protect, authorize('admin', 'manager'), async (req, res, next) => {
+  try {
+    const user = await userService.addUserToTeam(req.params.id, req.body.teamId, req.user);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/{id}/team:
+ *   delete:
+ *     tags: [Users]
+ *     summary: Remove user from team
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User removed from team successfully
+ */
+router.delete('/:id/team', protect, authorize('admin', 'manager'), async (req, res, next) => {
+  try {
+    const user = await userService.removeUserFromTeam(req.params.id, req.user);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/{id}/permissions:
+ *   post:
+ *     tags: [Users]
+ *     summary: Add specific permissions to user
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - permissions
+ *             properties:
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Permissions added successfully
+ */
+router.post('/:id/permissions', protect, authorize('admin'), async (req, res, next) => {
+  try {
+    const user = await userService.addPermissions(req.params.id, req.body.permissions);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @swagger
+ * /api/users/{id}/permissions:
+ *   delete:
+ *     tags: [Users]
+ *     summary: Remove specific permissions from user
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - permissions
+ *             properties:
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Permissions removed successfully
+ */
+router.delete('/:id/permissions', protect, authorize('admin'), async (req, res, next) => {
+  try {
+    const user = await userService.removePermissions(req.params.id, req.body.permissions);
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router; 
