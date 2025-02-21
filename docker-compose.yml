@@ -2,23 +2,26 @@ version: '3.8'
 
 services:
   api:
-    build: .
+    build: 
+      context: .
+      target: ${NODE_ENV:-development}
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
       - MONGODB_URI=mongodb://mongodb:27017/api
-      - JWT_SECRET=your-super-secret-jwt-key
       - REDIS_URI=redis://redis:6379
-    depends_on:
-      - mongodb
+      - JWT_SECRET=${JWT_SECRET:-dev_secret}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    depends_on:
+      - mongodb
+      - redis
     command: npm run dev
 
   mongodb:
-    image: mongo:5
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
