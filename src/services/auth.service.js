@@ -6,6 +6,7 @@ const { ApiError } = require('../middlewares/errorHandler');
 class AuthService {
   async register(userData) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
+    console.log("hashedPassword", hashedPassword);
     const user = await userRepository.create({
       ...userData,
       password: hashedPassword
@@ -21,7 +22,11 @@ class AuthService {
       throw new ApiError(401, 'Invalid credentials');
     }
 
-    const isPasswordValid = await user.comparePassword(password);
+    console.log("user", user);
+    console.log("password", password);
+    console.log("user.password", user.password);
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new ApiError(401, 'Invalid credentials');
     }

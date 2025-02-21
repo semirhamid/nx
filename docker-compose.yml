@@ -9,8 +9,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      # Use the root credentials defined in mongodb service
-      - MONGODB_URI=mongodb://root:example@mongodb:27017/api
+      - MONGODB_URI=mongodb://root:example@mongodb:27017/api?authSource=admin
       - REDIS_URI=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET:-dev_secret}
     volumes:
@@ -35,7 +34,7 @@ services:
       - mongodb_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--username", "root", "--password", "example", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -63,7 +62,6 @@ services:
     ports:
       - "8081:8081"
     environment:
-      # Point to the alias provided for mongodb (i.e. "mongo")
       - ME_CONFIG_MONGODB_SERVER=mongo
       - ME_CONFIG_MONGODB_PORT=27017
       - ME_CONFIG_BASICAUTH_USERNAME=admin

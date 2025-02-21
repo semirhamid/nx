@@ -7,7 +7,8 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
-      retryWrites: true
+      retryWrites: true,
+      authSource: 'admin'
     });
     
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
