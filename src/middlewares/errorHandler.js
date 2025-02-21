@@ -36,7 +36,7 @@ const errorHandler = (err, req, res, next) => {
         message: err.message
       });
     } else {
-      // Programming or unknown errors
+      // unknown errors
       res.status(500).json({
         status: 'error',
         message: 'Something went wrong'

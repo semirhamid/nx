@@ -10,7 +10,7 @@ const connectDB = require('./config/database');
 const logger = require('./config/logger');
 const errorHandler = require('./middlewares/errorHandler');
 
-// Import routes
+// route imports 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const taskRoutes = require('./routes/task.routes');
@@ -26,7 +26,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
-// Rate limiting
+
 const limiter = rateLimit({
   windowMs: process.env.RATE_LIMIT_WINDOW_MS,
   max: process.env.RATE_LIMIT_MAX_REQUESTS
