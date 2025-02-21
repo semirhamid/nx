@@ -17,12 +17,18 @@ class AuthService {
 
   async login(email, password) {
     const user = await userRepository.findByEmail(email);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      throw new ApiError(401, 'Invalid credentials');
+    }
+
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
       throw new ApiError(401, 'Invalid credentials');
     }
 
     const token = this.generateToken(user._id);
-    return { user, token };
+    const userResponse = user.toJSON();
+    return { user: userResponse, token };
   }
 
   generateToken(userId) {

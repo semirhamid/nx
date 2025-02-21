@@ -10,14 +10,7 @@ class UserRepository extends BaseRepository {
 
   async findByEmail(email) {
     const cacheKey = `${this.cacheName}:email:${email}`;
-    const cached = await cacheService.get(cacheKey);
-
-    if (cached) return cached;
-
-    const user = await this.model.findOne({ email });
-    if (user) {
-      await cacheService.set(cacheKey, user);
-    }
+    const user = await this.model.findOne({ email }).select('+password');
     return user;
   }
 
@@ -26,7 +19,11 @@ class UserRepository extends BaseRepository {
     if (existingUser) {
       throw new ApiError(400, 'Email already exists');
     }
-    return super.create(data);
+    const user = new this.model(data);
+    await user.save();
+
+    await cacheService.del(`${this.cacheName}:all`);
+    return user;
   }
 }
 
