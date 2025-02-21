@@ -19,12 +19,12 @@ class TaskService {
   }
 
   async updateTask(id, data, userId) {
-    await this.getTaskById(id, userId); // Check ownership
+    await this.getTaskById(id, userId); 
     return taskRepository.update(id, data);
   }
 
   async deleteTask(id, userId) {
-    await this.getTaskById(id, userId); // Check ownership
+    await this.getTaskById(id, userId); 
     return taskRepository.delete(id);
   }
 }

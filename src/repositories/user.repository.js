@@ -1,7 +1,6 @@
 const BaseRepository = require('./base.repository');
 const User = require('../data/models/user.model');
 const { ApiError } = require('../middlewares/errorHandler');
-const cacheService = require('../services/cache.service');
 
 class UserRepository extends BaseRepository {
   constructor() {
@@ -10,7 +9,14 @@ class UserRepository extends BaseRepository {
 
   async findByEmail(email) {
     const cacheKey = `${this.cacheName}:email:${email}`;
+    const cached = await this.cacheService.get(cacheKey);
+
+    if (cached) return cached;
+
     const user = await this.model.findOne({ email }).select('+password');
+    if (user) {
+      await this.cacheService.set(cacheKey, user);
+    }
     return user;
   }
 
@@ -22,7 +28,7 @@ class UserRepository extends BaseRepository {
     const user = new this.model(data);
     await user.save();
 
-    await cacheService.del(`${this.cacheName}:all`);
+    await this.cacheService.del(`${this.cacheName}:all`);
     return user;
   }
 }

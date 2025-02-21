@@ -15,7 +15,7 @@ const userService = require('../services/user.service');
  *       200:
  *         description: List of users
  */
-router.get('/', protect, authorize('admin'), async (req, res, next) => {
+router.get('/', protect, authorize('user'), async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
     res.status(200).json(users);

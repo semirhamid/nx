@@ -7,10 +7,11 @@ class TaskRepository extends BaseRepository {
   }
 
   async findByUser(userId) {
+    console.log('userId', userId);
     const cacheKey = `${this.cacheName}:user:${userId}`;
     const cached = await this.cacheService.get(cacheKey);
 
-    if (cached) return cached;
+    if (Array.isArray(cached) && cached.length > 0) return cached;
 
     const tasks = await this.model.find({ userId });
     await this.cacheService.set(cacheKey, tasks);

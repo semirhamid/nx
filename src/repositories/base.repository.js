@@ -5,11 +5,12 @@ class BaseRepository {
   constructor(model, cacheName) {
     this.model = model;
     this.cacheName = cacheName;
+    this.cacheService = cacheService;
   }
 
   async findById(id) {
     const cacheKey = `${this.cacheName}:${id}`;
-    const cached = await cacheService.get(cacheKey);
+    const cached = await this.cacheService.get(cacheKey);
     
     if (cached) return cached;
 
@@ -18,24 +19,24 @@ class BaseRepository {
       throw new ApiError(404, 'Resource not found');
     }
 
-    await cacheService.set(cacheKey, item);
+    await this.cacheService.set(cacheKey, item);
     return item;
   }
 
   async findAll(filter = {}) {
     const cacheKey = `${this.cacheName}:all:${JSON.stringify(filter)}`;
-    const cached = await cacheService.get(cacheKey);
+    const cached = await this.cacheService.get(cacheKey);
 
     if (cached) return cached;
 
     const items = await this.model.find(filter);
-    await cacheService.set(cacheKey, items);
+    await this.cacheService.set(cacheKey, items);
     return items;
   }
 
   async create(data) {
     const item = await this.model.create(data);
-    await cacheService.del(`${this.cacheName}:all`);
+    await this.cacheService.del(`${this.cacheName}:all`);
     return item;
   }
 
@@ -49,8 +50,8 @@ class BaseRepository {
       throw new ApiError(404, 'Resource not found');
     }
 
-    await cacheService.del(`${this.cacheName}:${id}`);
-    await cacheService.del(`${this.cacheName}:all`);
+    await this.cacheService.del(`${this.cacheName}:${id}`);
+    await this.cacheService.del(`${this.cacheName}:all`);
     return item;
   }
 
@@ -61,8 +62,8 @@ class BaseRepository {
       throw new ApiError(404, 'Resource not found');
     }
 
-    await cacheService.del(`${this.cacheName}:${id}`);
-    await cacheService.del(`${this.cacheName}:all`);
+    await this.cacheService.del(`${this.cacheName}:${id}`);
+    await this.cacheService.del(`${this.cacheName}:all`);
     return item;
   }
 }
