@@ -22,10 +22,6 @@ class AuthService {
       throw new ApiError(401, 'Invalid credentials');
     }
 
-    console.log("user", user);
-    console.log("password", password);
-    console.log("user.password", user.password);
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new ApiError(401, 'Invalid credentials');
