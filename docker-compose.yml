@@ -9,6 +9,7 @@ services:
       - NODE_ENV=development
       - MONGODB_URI=mongodb://mongodb:27017/api
       - JWT_SECRET=your-super-secret-jwt-key
+      - REDIS_URI=redis://redis:6379
     depends_on:
       - mongodb
     volumes:
@@ -23,5 +24,13 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
-  mongodb_data: 
+  mongodb_data:
+  redis_data: 
