@@ -7,12 +7,14 @@ COPY package*.json ./
 FROM base as development
 RUN npm install --include=dev
 COPY . .
+RUN npm run seed
 CMD ["npm", "run", "dev"]
 
 # Production stage
 FROM base as production
 RUN npm ci --omit=dev
 COPY . .
+RUN npm run seed
 CMD ["npm", "start"]
 
 EXPOSE 3000 

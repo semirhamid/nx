@@ -9,6 +9,7 @@ const swaggerSpec = require('./config/swagger');
 const connectDB = require('./config/database');
 const logger = require('./config/logger');
 const { errorHandler } = require('./middlewares/errorHandler');
+const seedAdmin = require('./scripts/seed');
 
 // route imports 
 const authRoutes = require('./routes/auth.routes');
@@ -18,7 +19,10 @@ const taskRoutes = require('./routes/task.routes');
 const app = express();
 
 // Connect to MongoDB
-connectDB();
+(async () => {
+  await connectDB();
+  await seedAdmin();
+})();
 
 // Middleware
 app.use(helmet());
