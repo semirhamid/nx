@@ -18,4 +18,16 @@ coverage/
 .vscode/
 
 # OS
-.DS_Store 
+.DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Kubernetes
+k8s/**/*.generated.yaml
+
+# Node
+npm-debug.log 

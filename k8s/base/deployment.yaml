@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nx-api
+  namespace: nx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nx-api
+  template:
+    metadata:
+      labels:
+        app: nx-api
+    spec:
+      containers:
+      - name: nx-api
+        image: ${DOCKER_REGISTRY}/node-api:${IMAGE_TAG}
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: api-secrets
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5 
